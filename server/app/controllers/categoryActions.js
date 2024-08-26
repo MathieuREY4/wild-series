@@ -1,3 +1,5 @@
+const tables = require("../../database/tables");
+
 // Some data to make the trick
 
 const categories = [
@@ -11,25 +13,26 @@ const categories = [
   },
 ];
 
-// Action pour obtenir la liste des catégories
-const browseCategories = (req, res) => {
-  res.json(categories);
+// Declare the actions
+
+const browse = async (req, res) => {
+  const categoriesFromDB = await tables.category.readAll();
+
+  res.json(categoriesFromDB);
 };
 
-// Action pour obtenir une catégorie spécifique par ID
-const readCategory = (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const category = categories.find((cat) => cat.id === id);
+const read = (req, res) => {
+  const parsedId = parseInt(req.params.id, 10);
 
-  if (category) {
+  const category = categories.find((p) => p.id === parsedId);
+
+  if (category != null) {
     res.json(category);
   } else {
-    res.status(404).json({ message: "Category not found" });
+    res.sendStatus(404);
   }
 };
 
-// Exporter les actions pour pouvoir les utiliser ailleurs
-module.exports = {
-  browseCategories,
-  readCategory,
-};
+// Export them to import them somewhere else
+
+module.exports = { browse, read };
